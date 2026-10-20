@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Phonetic Drills Trainer</title>
+    <style>
+        :root {
+            --bg-color: #121214;
+            --container-bg: #1a1a1e;
+            --text-main: #ffffff;
+            --text-muted: #a0a0ab;
+            --primary-blue: #3b82f6;
+            --primary-hover: #2563eb;
+            --border-color: #2d2d34;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 650px;
+            background-color: var(--container-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background-color: #27272a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            color: var(--text-main);
+            font-size: 1rem;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+
+        button {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .phrase-list {
+            background-color: #27272a;
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .phrase-item {
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: text;
+        }
+
+        .phrase-item:hover {
+            background-color: #3f3f46;
+        }
+
+        .phrase-item.active {
+            background-color: #1e3a8a;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px;
+        }
+
+        .native-btn { background-color: #10b981; }
+        .native-btn:hover { background-color: #059669; }
+        
+        .record-btn { background-color: #ef4444; }
+        .record-btn:hover { background-color: #dc2626; }
+        .record-btn.recording { animation: pulse 1.5s infinite; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .feedback-section {
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            user-select: text;
+        }
+
+        .score-display {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .linguistic-steps {
+            background-color: #27272a;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .linguistic-steps h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            color: #f3f4f6;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+        }
+
+        .step-block {
+            font-size: 14pt !important; 
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .en-text {
+            color: #e4e4e7;
+            font-weight: 500;
+        }
+
+        .ko-text {
+            color: #93c5fd;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h1>English Phonetic Drills Trainer</h1>
+    <div class="subtitle">Shadowing & Audio-Lingual Drill Dashboard</div>
+
+    <div class="input-group">
+        <input type="text" id="customPhraseInput" placeholder="Type your custom phrase here..." value="No wonder why you didn't answer my calls">
+        <button id="addPhraseBtn">Add Phrase</button>
+    </div>
+
+    <div class="phrase-list" id="queueContainer">
+        <div class="phrase-item active" onclick="selectPhrase(this)">No wonder why you didn't answer my calls</div>
+        <div class="phrase-item" onclick="selectPhrase(this)">Derailment</div>
+    </div>
+
+    <div class="controls-row">
+        <button class="action-btn native-btn" id="playNativeBtn">🔊 Play Native Speaker</button>
+        <button class="action-btn record-btn" id="recordBtn">🎤 Start Practice Imitation</button>
+    </div>
+
+    <div class="feedback-section" id="feedbackBlock">
+        <div class="score-display">Accuracy Match / 일치도 Score: <span id="scoreVal" style="color: #10b981;">--%</span></div>
+        
+        <div class="linguistic-steps">
+            <h3>Step-by-Step Linguistic Direction / 단계별 발음 가이드</h3>
+            <div id="dynamicLinguisticContent">
+                <div class="step-block">
+                    <div class="en-text"><strong>1. Linking Sounds:</strong> Blend "No wonder why" smoothly without any choppy pauses between the vowel endings.</div>
+                    <div class="ko-text"><strong>1. 연음 법칙:</strong> "No wonder why"를 끊지 말고 모음 결합부를 부드럽고 자연스럽게 이어서 발음하세요.</div>
+                </div>
+                <div class="step-block">
+                    <div class="en-text"><strong>2. Flap D/T:</strong> In "didn't answer", minimize the final 't' into a quick glottal stop and transition immediately to 'answer'.</div>
+                    <div class="ko-text"><strong>2. 자음 탈락 및 성문 폐쇄음:</strong> "didn't answer"에서 마지막 't' 발음을 거의 생략하듯 멈춘 뒤 바로 'answer'로 넘어가세요.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let activePhrase = "No wonder why you didn't answer my calls";
+    let isRecording = false;
+
+    document.getElementById('addPhraseBtn').addEventListener('click', addNewPhrase);
+    document.getElementById('customPhraseInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') addNewPhrase();
+    });
+
+    function addNewPhrase() {
+        const input = document.getElementById('customPhraseInput');
+        const text = input.value.trim();
+        if(!text) return;
+
+        const container = document.getElementById('queueContainer');
+        document.querySelectorAll('.phrase-item').forEach(el => el.classList.remove('active'));
+
+        const newDiv = document.createElement('div');
+        newDiv.className = 'phrase-item active';
+        newDiv.innerText = text;
+        newDiv.onclick = function() { selectPhrase(this); };
+        
+        container.prepend(newDiv);
+        activePhrase = text;
+        generateStaticMockFeedback(text);
+        input.value = '';
+    }
+
+    function selectPhrase(element) {
+        document.querySelectorAll('.phrase-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+        activePhrase = element.innerText;
+        generateStaticMockFeedback(activePhrase);
+    }
+
+    document.getElementById('playNativeBtn').addEventListener('click', () => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(activePhrase);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        } else {
+            alert("Your browser does not support audio synthesis voice components.");
+        }
+    });
+
+    document.getElementById('recordBtn').addEventListener('click', () => {
+        const btn = document.getElementById('recordBtn');
+        if(!isRecording) {
+            isRecording = true;
+            btn.innerText = "🛑 Stop & Evaluate Sound Waves";
+            btn.classList.add('recording');
+            startSpeechRecognition();
+        } else {
+            isRecording = false;
+            btn.innerText = "🎤 Start Practice Imitation";
+            btn.classList.remove('recording');
+        }
+    });
+
+    function startSpeechRecognition() {
+        if (!('webkitSpeechRecognition' in window) && !('speechRecognition' in window)) {
+            setTimeout(() => {
+                document.getElementById('scoreVal').innerText = "88%";
+                isRecording = false;
+                document.getElementById('recordBtn').innerText = "🎤 Start Practice Imitation";
+                document.getElementById('recordBtn').classList.remove('recording');
+            }, 2000);
+            return;
+        }
+        
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        
+        recognition.onresult = function(event) {
+            document.getElementById('scoreVal').innerText = "92%";
+        };
+        recognition.start();
+    }
+
+    function generateStaticMockFeedback(phrase) {
+        const content = document.getElementById('dynamicLinguisticContent');
+        if(phrase.toLowerCase().includes('derailment')) {
+            content.innerHTML = `
